@@ -1,39 +1,45 @@
 jQuery(function($) {
 	$(window).scroll(function(){
 	  	if ($(this).scrollTop() > 50) {
-	      	$('#subHeader').addClass('fixed');
+	      	$('#subHeader').addClass('fixed'); // when scrolling down more than 50 px add class fixed
 	  	} else {
-	      	$('#subHeader').removeClass('fixed');
+	      	$('#subHeader').removeClass('fixed'); // when scrolling less than 50 px remove class fixed
 	  	}
 	});
 	if ($(window).scrollTop() > 50) {
-		$('#subHeader').addClass('fixed');
+		$('#subHeader').addClass('fixed'); // add the class fixed to the subheader if scrolled down 50px or more from top when pages loaded
 	}
 	function loadBgImg() {
+		// Checks for all divs with the class .lazybg
 		var bgLazy = $('.lazybg');
 
 		$.each(bgLazy, function() {
+			// Goes through each one
 				var imgDiv = $(this);
-			if (imgDiv.isOnScreen() == true) {
-				var bgImg = imgDiv.attr('data-bgimg');
+				// Checks if it is in view by using isOnScreen
+			if (imgDiv.isOnScreen() === true) {
+				var bgImg = imgDiv.attr('data-bgimg'); // fetch the img url
 				if(bgImg) {
 					imgDiv.css('opacity', '0');
 					$('<img src="'+ bgImg +'">').load(function() {
-						imgDiv.removeClass("lazybg");
+						imgDiv.removeClass("lazybg"); // remove the class so we don't check this one next time
 						imgDiv.css('background-image', 'url(' + bgImg + ')').animate({
 						    opacity: 1
-						  }, 1000);
+						  }, 1000); // add the img as background image and add som fancy transition
 					});
 				}
 			}
 		});
 	}
 	$( window ).scroll(function() {
+		// Calling the loadBgImg funtion on scroll
 		loadBgImg();
 	});
 	$( window ).resize(function() {
+		// Calling the loadBgImg funtion on resizing of the window
 		loadBgImg();
 	});
+	// Calling the loadBgImg when document is ready
 	loadBgImg();
 
 	$('body').on('click', '.btn-delete', function(e) {
@@ -42,52 +48,34 @@ jQuery(function($) {
 		 }
 	});
 
-	//binds to onchange event of your input field
+	// Lisetning to changes in the input file upload field for images
 	$('.img-file-upload').bind('change', function() {
-	  //this.files[0].size gets the size of your file.
+	  // Checkes so the size is not over 1 mb
+	  $('.image-error').remove(); // If user already uploaded a file that is to big remove the image-error
 	  if (this.files[0].size/1000000 > 1) {
-	  	$(this).after('<p class="image-error">The image is to large</p>');
-	  	$(this).val('');
-	  }
-	  else {
-	  	$('.image-error').remove();
+	  	$(this).after('<p class="image-error">The image is to large</p>'); // add warning below input field
+	  	$(this).val(''); // empties input field
 	  }
 
-	});
-
-	$('body').on('click', '.like-icon', function() {
-		likeBtn = $(this);
-		likesCount = likeBtn.next('.likes-count');
-		likesCountNum = parseInt(likesCount.text());
-		if(likeBtn.hasClass('liked')) {
-			likeBtn.removeClass('liked');
-			likeBtn.attr('title', 'Like this post');
-			likesCountNum--;
-			likesCount.text(likesCountNum);
-		} else {
-			likeBtn.addClass('liked');
-			likeBtn.attr('title', 'Unlike this post');
-			likesCountNum++;
-			likesCount.text(likesCountNum);
-		}
 	});
 
 });
 jQuery.fn.isOnScreen = function(){
 
-    var win = $(window);
+    var win = $(window); // defines var win to the window
 
     var viewport = {
         top : win.scrollTop(),
         left : win.scrollLeft()
-    };
-    viewport.right = viewport.left + win.width();
-    viewport.bottom = viewport.top + win.height();
+    }; // defines the viewport
+    viewport.right = viewport.left + win.width(); // defines the width of the viewport
+    viewport.bottom = viewport.top + win.height(); // defines the height of the viewport
 
-    var bounds = this.offset();
-    bounds.right = bounds.left + this.outerWidth();
-    bounds.bottom = bounds.top + this.outerHeight();
+    var bounds = this.offset(); // defines the bounds
+    bounds.right = bounds.left + this.outerWidth(); // defines the width of the bounds
+    bounds.bottom = bounds.top + this.outerHeight(); // defines the height of the bounds
 
+    // Checks if the div is on screen by checking if the bounds is inside the viewport
     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
 
 };

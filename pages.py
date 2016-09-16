@@ -63,7 +63,7 @@ class MainPage(Handler):
         self.render('index.html', posts=posts)
 
 
-# User Pages
+#### User Pages ####
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 
@@ -142,6 +142,23 @@ class RegisterPage(Handler):
             self.redirect('/profile/' + u.name)
 
 
+class ProfilePage(Handler):
+
+    def get(self, user_profile):
+        current_user_profile = User.by_name(user_profile)
+        if not current_user_profile:
+            self.response.set_status(404)
+            self.render("404.html")
+            return
+        posts = Post.query()
+        posts = posts.filter(Post.user_id == current_user_profile.key.id())
+        posts = posts.order(-Post.created)
+        posts = posts.fetch()
+
+        self.render(
+            'profile.html', user_profile=current_user_profile, posts=posts)
+
+
 class EditProfilePage(Handler):
 
     def get(self):
@@ -217,7 +234,15 @@ class LoginPage(Handler):
             msg = 'Invalid login'
             self.render('login.html', error=msg)
 
-# Blog Pages
+
+class Logout(Handler):
+
+    def get(self):
+        self.logout()  # Call logout function of parent class Handler
+        self.redirect('/')  # Redirect to frontpage on logout
+
+
+#### Blog Pages ####
 
 
 class BlogPage(Handler):
@@ -364,34 +389,10 @@ class MissingPage(Handler):
         return
 
 
-class Logout(Handler):
-
-    def get(self):
-        self.logout()  # Call logout function of parent class Handler
-        self.redirect('/')  # Redirect to frontpage on logout
-
-
 class RouteProfile(Handler):
 
     def get(self):
         self.redirect('/')
-
-
-class ProfilePage(Handler):
-
-    def get(self, user_profile):
-        current_user_profile = User.by_name(user_profile)
-        if not current_user_profile:
-            self.response.set_status(404)
-            self.render("404.html")
-            return
-        posts = Post.query()
-        posts = posts.filter(Post.user_id == current_user_profile.key.id())
-        posts = posts.order(-Post.created)
-        posts = posts.fetch()
-
-        self.render(
-            'profile.html', user_profile=current_user_profile, posts=posts)
 
 
 class Image(Handler):

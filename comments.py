@@ -46,22 +46,35 @@ class Comment(ndb.Model):
         the content, post_id (the post that the comment belongs to) and user_id (the author of the comment)
         Comment.create("content", post_id, user_id)
         """
+
+        # Create list to collet errors
         cls.error_msg = []
+        # Set has_error to false
         cls.has_error = False
 
         if not content:
+            # If there is no content set has_error to True
+            # and add error message
             cls.has_error = True
             cls.error_msg.extend(["You need to write a comment"])
         if content and len(content) < 5:
+            # If there is content but it is shorter than 5 characters set has_error to True
+            # and add error message
             cls.has_error = True
             cls.error_msg.extend(
                 ["Your comment need to be more than 5 characters"])
 
         if not cls.has_error:
+            # If there are no errors, create a new comment by calling the
+            # parent class Comment
             cls.comment = Comment(parent=comment_key(),
                                   content=content, user_id=int(user_id),
                                   post_id=int(post_id))
+            # Put the comment into the database
             cls.comment.put()
+            # Return to the CommentPost class in pages.py
             return cls
         else:
+            # If there are error return the cls with error_msg to the
+            # CommentPost class in pages.py
             return cls
