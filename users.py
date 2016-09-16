@@ -60,7 +60,7 @@ class User(ndb.Model):
     def by_name(cls, name):
         u = User.query()
         u = u.filter(User.name == name)
-        u = u.fetch()
+        u = u.get()
         return u
 
     @classmethod

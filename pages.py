@@ -66,18 +66,26 @@ class MainPage(Handler):
 # User Pages
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+
+
 def valid_username(username):
     return username and USER_RE.match(username)
 
 PASS_RE = re.compile(r"^.{3,20}$")
+
+
 def valid_password(password):
     return password and PASS_RE.match(password)
 
-EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+EMAIL_RE = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+
+
 def valid_email(email):
     return not email or EMAIL_RE.match(email)
 
+
 class RegisterPage(Handler):
+
     def get(self):
         if self.user:
             self.redirect("/profile/" + self.user.name)
@@ -93,8 +101,8 @@ class RegisterPage(Handler):
         self.description = self.request.get('description')
         self.profile_img = self.request.get('profile_img')
         self.error_msg = []
-        self.params = dict(username = self.username,
-                      email = self.email, description = self.description)
+        self.params = dict(username=self.username,
+                           email=self.email, description=self.description)
 
         if not valid_username(self.username):
             self.error_msg.extend(["That's not a valid username."])
@@ -118,20 +126,24 @@ class RegisterPage(Handler):
             self.done()
 
     def done(self):
-        #make sure the user doesn't already exist
+        # make sure the user doesn't already exist
         u = User.by_name(self.username)
         if u:
             self.error_msg.extend(["That user already exists."])
             self.params['error_msg'] = self.error_msg
             self.render('register.html', **self.params)
         else:
-            u = User.register(self.username, self.password, self.email, self.description, self.profile_img)
+            u = User.register(
+                self.username, self.password, self.email,
+                self.description, self.profile_img)
             u.put()
 
             self.login(u)
             self.redirect('/profile/' + u.name)
 
+
 class EditProfilePage(Handler):
+
     def get(self):
         if self.user:
             user = User.by_id(int(self.user.key.id()))
@@ -150,8 +162,8 @@ class EditProfilePage(Handler):
         self.delete_profile_img = self.request.get('delete_profile_img')
         self.user_id = self.user.key.id()
         self.error_msg = []
-        self.params = dict(username = self.username,
-                      email = self.email, description = self.description)
+        self.params = dict(username=self.username,
+                           email=self.email, description=self.description)
 
         if not valid_username(self.username):
             self.error_msg.extend(["That's not a valid username."])
@@ -175,17 +187,21 @@ class EditProfilePage(Handler):
             self.done()
 
     def done(self):
-        #make sure the user doesn't already exist
+        # make sure the user doesn't already exist
         u = User.by_name(self.username)
         if u and not self.username == self.user.name:
             self.error_msg.extend(["That user already exists."])
             self.params['error_msg'] = self.error_msg
             self.render('register.html', **self.params)
         else:
-            user_update = User.update(self.username, self.password, self.email, self.description, self.profile_img, self.delete_profile_img, self.user_id)
+            user_update = User.update(self.username, self.password, self.email,
+                                      self.description, self.profile_img,
+                                      self.delete_profile_img, self.user_id)
             self.redirect('/profile/' + self.user.name)
 
+
 class LoginPage(Handler):
+
     def get(self):
         self.render('login.html')
 
@@ -199,9 +215,10 @@ class LoginPage(Handler):
             self.redirect('/blog')
         else:
             msg = 'Invalid login'
-            self.render('login-form.html', error = msg)
+            self.render('login.html', error=msg)
 
 # Blog Pages
+
 
 class BlogPage(Handler):
 
@@ -364,7 +381,6 @@ class ProfilePage(Handler):
 
     def get(self, user_profile):
         current_user_profile = User.by_name(user_profile)
-        current_user_profile = current_user_profile[0]
         if not current_user_profile:
             self.response.set_status(404)
             self.render("404.html")
