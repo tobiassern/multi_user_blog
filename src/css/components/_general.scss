@@ -1,0 +1,47 @@
+.page-title {
+	text-align: center;
+}
+
+img {
+	max-width: 100%;
+}
+body {
+	font-size: $base-font-size;
+	font-family: $secondary-font;
+}
+
+p {
+	line-height: 1.74;
+	font-size: 18px;
+}
+
+.content {
+	padding-bottom: 50px;
+}
+
+.text-center {
+	text-align: center;
+}
+.lazybg {
+	mask: url(../images/img-icon.svg) no-repeat 50% 50%;
+	background-color: #ffffff;
+	mask-size: 25%;
+	opacity: 1 !important;
+}
+
+a {
+	color: $link-color;
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: $primary-font;
+}

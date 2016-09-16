@@ -1,0 +1,40 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>{% block title %}{% endblock %} | Tobias Blog</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Crimson+Text|Montserrat" rel="stylesheet">
+    </head>
+    <body>
+    	<header id="masthead" class="site-header">
+            <h1 class="site-title"><a href="/">Toby's Blog</a></h1>
+            <div id="subHeader" class="sub-header">
+                <div class="container">
+                    <div class="sub-header-actions">
+                        <a href="/" class="read-blog-link">Read Blog</a>
+                        {% if user %}
+                        <div class="btn-group">
+                            <a href="/create-post" class="btn">Create Post</a>
+                            <a href="/profile/{{user.name}}" class="btn btn-secondary">My Profile</a>
+                        </div>
+                        <a href="/logout" class="logout-link">Logout</a>
+                        {% else %}
+                        <div class="btn-group">
+                            <a href="/login" class="btn">Login</a>
+                            <a href="/register" class="btn btn-secondary">Register</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+    	</header>
+	  	{% block content %}
+  		{% endblock %}
+        <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="/static/js/app-min.js"></script>
+    </body>
+</html>

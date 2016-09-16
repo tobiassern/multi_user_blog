@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="content content-register container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+		<h1 class="page-title">Register</h1>
+			<form id="login-form" method="post" enctype="multipart/form-data">
+				{% if error_msg %}
+				<ul class="form-error-message">
+					{% for item in error_msg %}
+					<li>{{item | safe}}</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+				<input type="text" name="username" id="username" placeholder="Username" value="{{username}}" required>
+				<input type="password" name="password" id="password" placeholder="Password" value="{{password}}" required>
+				<input type="password" name="verify" id="verify" placeholder="Verify Password" value="{{verify}}" required>
+				<input type="email" name="email" id="email" value="{{email}}" placeholder="Email">
+                <textarea name="description" id="description" placeholder="Profile Description">{{description}}</textarea>
+				<label for="profile_img">Profile Image <small>Must be square jpg, jpeg or png file and max 1 mb.</small></label>
+				<input type="file" name="profile_img" id="profile_img" class="img-file-upload" accept="image/x-png, image/jpeg, image/jpg">
+				<button type="submit">Register</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

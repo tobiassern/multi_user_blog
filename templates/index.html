@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Start{% endblock %}
+{% block content %}
+<div class="content content-frontpage">
+    <div class="container-fluid post-grid">
+        <div class="row">
+        {% if posts %}
+            {% for post in posts %}
+                {% include '_post-grid.html' %}
+            {% endfor %}
+        {% else %}
+        <p class="text-center">No posts has been created yet</p>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

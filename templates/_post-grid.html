@@ -1,0 +1,11 @@
+<div class="post{% if post.featured_img %} post-has-img{% endif %}">
+    <a href="/blog/{{post.key.id()}}">
+    	{% if post.featured_img %}
+        <div class="post-image lazybg" data-bgimg="/img?id={{post.key.id()}}&type=featured_img"></div>
+        {% endif %}
+        <div class="post-content">
+            <h2 class="post-title">{{ post.subject }}</h2>
+            <p class="post-meta">{{post.created.strftime('%d %b, %y')}}</p>
+        </div>
+    </a>
+</div>

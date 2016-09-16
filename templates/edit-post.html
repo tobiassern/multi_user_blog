@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Edit Post{% endblock %}
+{% block content %}
+<div class="content content-create-post container">
+	<div class="row">
+	<p><small><a href="/blog/{{post.key.id()}}" title="Back to post">&#8592; Back to post</a></small></p>
+	<h1 class="page-title">Edit Post</h1>
+		<div class="col-md-6 col-md-offset-3">
+			{% if error_msg %}
+			<ul class="form-error-message">
+				{% for item in error_msg %}
+				<li>{{item | safe}}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			<form id="login-form" method="post" enctype="multipart/form-data">
+				<input type="text" name="subject" id="subject" placeholder="Post Title" value="{{post.subject}}" required>
+                <textarea name="content" id="content" placeholder="Post Content" required>{{post.content}}</textarea>
+                {% if post.featured_img %}
+                <img class="post-image" src="/img?id={{post.key.id()}}&type=featured_img">
+                <label for="delete_featured_img">Delete Featured Image</label>
+                <input type="checkbox" id="delete_featured_img" name="delete_featured_img">
+                <em>Or upload a new featured image</em>
+                {% endif %}
+                <label for="featured_img">Featured Image <small>Must be jpg, jpeg or png file and max 1 mb.</small></label>
+                <input type="file" name="featured_img" id="featured_img" class="img-file-upload" accept="image/x-png, image/jpeg, image/jpg">
+				<button type="submit">Update Post</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

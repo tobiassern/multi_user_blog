@@ -1,0 +1,86 @@
+form {
+	margin: 25px auto 15px auto;
+	width: 100%;
+	max-width: 480px;
+}
+input {
+	padding: 8px 12px;
+	width: 100%;
+	margin-bottom: 15px;
+	border: 1px solid #ededed;
+	max-width: 100%;
+}
+input[type="file"] {
+	padding: 8px 0;
+	border: none;
+}
+label {
+	display: block;
+	margin-top: 5px;
+}
+textarea {
+	padding: 8px 12px;
+	width: 100%;
+	margin-bottom: 15px;
+	height: 300px;
+	max-width: 100%;
+	border: 1px solid #ededed;
+}
+button[type="submit"] {
+	width: 100%;
+	display: block;
+	margin-bottom: 35px;
+}
+.form-error-message {
+	color: red;
+	padding-left: 20px;
+}
+.commments {
+	margin-top: 25px;
+	h2 {
+		margin: 0;
+	}
+	#commentform {
+		width: 100%;
+		max-width: 100%;
+		#comment {
+			height: 150px;
+		}
+	}
+	#comments-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		li {
+			border-top: 1px solid #ededed;
+			margin-top: 15px;
+			p {
+				font-size: 16px;
+			}
+		}
+	}
+}
+.image-error {
+	color: red;
+	margin-top: -10px;
+	font-size: 80%;
+}
+.likes {
+	.like-icon {
+		cursor: pointer;
+		display: inline-block;
+		width: 35px;
+		height: 35px;
+		mask: url(../images/heart-icon.svg) no-repeat 100% 100%;
+		mask-size: contain;
+  		background-color: red;
+		transition: transform $standard-transition;
+		vertical-align: middle;
+		&:hover {
+			transform: scale(1.075);
+		}
+		&.liked {
+			background-color: #a5a5a5;
+		}
+	}
+}

@@ -1,0 +1,32 @@
+<div class="commments">
+    <h2>Comments</h2>
+    {% if user %}
+    <form action="/comment/{{post.key.id()}}" id="commentform" method="post">
+    <textarea name="comment" id="comment" placeholder="Write your comment..." required></textarea>
+    <button type="submit">Post Comment</button>
+    </form>
+    {% else %}
+   	<p><small>You need to login or register to comment</small></p>
+    <div class="btn-group">
+        <a href="/login" class="btn">Login</a>
+        <a href="/register" class="btn btn-secondary">Register</a>
+    </div>
+    {% endif %}
+
+    {% if comment_output %}
+    <ul id="comments-list">
+    {% for comment in comment_output %}
+    <li>
+    <p>
+        {% for line in comment.content.splitlines() %}
+            {{line}}<br>
+        {% endfor %}
+    </p>
+    <small>{%if author.name == comment.user_name%}<b>Author</b> | {% endif %}{{comment.user_name}} | {{comment.created.strftime('%d %b, %Y, %H:%M')}}{% if comment.user_name == user.name %} | <a href="/comment/{{comment.comment_id}}/{{post.key.id()}}/delete" class="btn-delete" style="color: red;">Delete</a>{% endif %}</small>
+    </li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <p><small><em>No Comments Created</em></small></p>
+    {% endif %}
+</div>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="content content-register container">
+	<div class="row">
+	<p><small><a href="/profile/{{user.name}}" title="Back to profile">&#8592; Back to profile</a></small></p>
+		<div class="col-md-6 col-md-offset-3">
+		<h1 class="page-title">Edit Profile</h1>
+			<form id="login-form" method="post" enctype="multipart/form-data">
+				{% if error_message %}
+				<ul class="form-error-message">
+				{% for item in error_message %}
+				<li>{{item | safe}}</li>
+				{% endfor %}
+				</ul>
+				{% endif %}
+				<input type="text" name="username" id="username" placeholder="Username" value="{{user.name}}" required>
+				<input type="password" name="password" id="password" placeholder="Password" value="{{password}}">
+				<input type="password" name="verify" id="verify" placeholder="Verify Password" value="{{verify}}">
+				<input type="email" name="email" id="email" value="{{user.email}}" placeholder="Email">
+                <textarea name="description" id="description" placeholder="Profile Description">{{user.description}}</textarea>
+				{% if user.profile_img %}
+				<div class="user-profile-img lazybg" data-bgimg="/img?id={{user.key.id()}}&type=profile_img"></div>
+				<label for="delete_profile_image">Delete Profile Image</label>
+				<input type="checkbox" id="delete_profile_img" name="delete_profile_img">
+				{% endif %}
+				<label for="profile_img">Profile Image <small>Must be square jpg, jpeg or png file and max 1 mb.</small></label>
+				<input type="file" name="profile_img" id="profile_img" class="img-file-upload" accept="image/x-png, image/jpeg, image/jpg">
+				<button type="submit">Update Profile</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

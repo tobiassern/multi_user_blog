@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{post.subject}}{% endblock %}
+{% block content %}
+<div class="content content-post container">
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+            {% if post.featured_img %}
+            <img class="post-image" src="/img?id={{post.key.id()}}&type=featured_img">
+            {% endif %}
+            <h1 class="page-title">{{post.subject}}</h1>
+            <p class="post-meta">{{post.created.strftime('%d %b, %y - %H:%M')}}
+            {% if not post.created.strftime('%Y-%m-%d-%H-%M') == post.last_modified.strftime('%Y-%m-%d-%H-%M') %}
+             | Updated {{post.last_modified.strftime('%d %b, %y - %H:%M')}}</p>
+            {% endif %}
+            {% if user.name == author.name %}
+            <div class="text-center">
+                <div class="btn-group">
+                    <a href="/blog/{{post.key.id()}}/edit" class="btn btn-secondary">Edit Post</a>
+                    <a href="/blog/{{post.key.id()}}/delete" class="btn btn-danger btn-delete">Delete Post</a>
+                </div>
+            </div>
+            {% endif %}
+            <p>{% for line in post.content.splitlines() %}
+                    {{line}}<br>
+                {% endfor %}</p>
+            <div class="author-profile">
+            {% if author %}
+                {% if author.profile_img %}
+                <div class="user-profile-img lazybg" data-bgimg="/img?id={{author.key.id()}}&type=profile_img"></div>
+                {% endif %}
+                <h3 class="author-profile-username">{{author.name}}</h3>
+                <div class="btn-group">
+                    <a href="/profile/{{author.name}}" class="btn">Author's Profile</a>
+                    {% if author.email %}
+                    <a href="mailto:{{author.email}}" class="btn btn-secondary">Contact Me</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p><em>Deleted User</em></p>
+            {% endif %}
+            </div>
+            {% include '_likes.html' %}
+            {% include '_comments.html' %}
+		</div>
+	</div>
+</div>
+{% endblock %}

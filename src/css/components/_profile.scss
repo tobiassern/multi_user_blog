@@ -1,0 +1,30 @@
+.content-profile {
+  	.user-profile-img {
+  		margin: 25px auto;
+		width: 200px;
+		height: 200px;
+		background-color: #ffffff;
+		background-size: cover;
+		border-radius: 100%;
+		top: 15px;
+		right: 15px;
+		border: 1px solid rgba(255,255,255,0.5);
+		&.lazybg {
+			background-color: #000000;
+		}
+	}
+}
+.user-profile-img {
+	margin: 25px auto;
+	width: 200px;
+	height: 200px;
+	background-color: #ffffff;
+	background-size: cover;
+	border-radius: 100%;
+	top: 15px;
+	right: 15px;
+	border: 1px solid rgba(255,255,255,0.5);
+	&.lazybg {
+		background-color: #000000;
+	}
+}

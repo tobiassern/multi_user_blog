@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{user_profile.name}}{% endblock %}
+{% block content %}
+<div class="content content-profile">
+	<div class="container">
+    	<div class="row">
+        {% if user_profile.profile_img %}
+    	<div class="user-profile-img lazybg" data-bgimg="/img?id={{user_profile.key.id()}}&type=profile_img"></div>
+        {% endif %}
+    	   <h1 class="page-title">{{user_profile.name}}</h1>
+        	<div class="text-center">
+                {% if user_profile.name == user.name %}
+        		<div class="btn-group">
+        			<a href="/edit-profile" class="btn btn-secondary">Edit Profile</a>
+        			<a href="/logout" class="btn btn-secondary">Logout</a>
+    			</div>
+                {% endif %}
+        	</div>
+    		<div class="col-md-6 col-md-offset-3">
+            {% if user_profile.description %}
+                <p>{% for line in user_profile.description.splitlines() %}
+                {{line}}<br>
+                {% endfor %}</p>
+            {% endif %}
+            {% if user_profile.email %}
+            <p class="text-center"><a href="mailto:{{user_profile.email}}" class="btn">Contact Me</a></p>
+            {% endif %}
+            </div>
+    	</div>
+	</div>
+ 	<div class="container-fluid post-grid">
+    {% if posts %}
+ 	  <h2 class="text-center">My Posts</h2>
+        <div class="row">
+        {% for post in posts %}
+            {% include '_post-grid.html' %}
+        {% endfor %}
+        </div>
+    {% else %}
+        {% if user_profile.name == user.name %}
+        <p class="text-center">You have no posts. <a href="/create-post">Create your first post</a></p>
+        {% endif %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

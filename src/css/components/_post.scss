@@ -1,0 +1,33 @@
+.content-post {
+	.post-image {
+		margin-top: 25px;
+	}
+	.post-meta {
+		text-align: center;
+		font-size: 80%;
+		font-weight: bold;
+	}
+	.author-profile {
+		background-color: #efefef;
+		padding: 15px;
+		text-align: center;
+		margin: 35px 0;
+	  	.user-profile-img {
+	  		margin: 0 auto;
+			width: 200px;
+			height: 200px;
+			background-color: #ffffff;
+			background-size: cover;
+			border-radius: 100%;
+			top: 15px;
+			right: 15px;
+			border: 1px solid rgba(255,255,255,0.5);
+			&.lazybg {
+				background-color: #000000;
+			}
+		}
+		.author-title {
+			margin-top: 0;
+		}
+	}
+}
