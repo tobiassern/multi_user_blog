@@ -2,10 +2,19 @@ from google.appengine.ext import ndb
 
 
 def comment_key(name='default'):
+    # Setting up the comment key for the database
     return ndb.Key('comments', name)
 
 
 class Comment(ndb.Model):
+
+    """Parent class for Comment
+    useful subclasses:
+    by_id
+    by_post_id
+    create"""
+
+    # Setup of all the values for the database entity of Post
     content = ndb.TextProperty(required=True)
     user_id = ndb.IntegerProperty(required=True)
     post_id = ndb.IntegerProperty(required=True)
@@ -14,10 +23,17 @@ class Comment(ndb.Model):
 
     @classmethod
     def by_id(cls, comment_id):
+        """Comment.by_id takes one parameter which is the id of the comment
+        Comment.by_id(12345)
+        """
         return Comment.get_by_id(int(comment_id), parent=comment_key())
 
     @classmethod
     def by_post_id(cls, post_id):
+        """Comment.by_post_id takes one parameter which is the id of the post
+        This is used to fetch all commments that belongs to one single post
+        Comment.by_post_id(12345)
+        """
         comments = Comment.query()
         comments = comments.filter(Comment.post_id == post_id)
         comments = comments.order(-Comment.created)
@@ -26,6 +42,10 @@ class Comment(ndb.Model):
 
     @classmethod
     def create(cls, content, post_id, user_id):
+        """Comment.create takes three parameters which is
+        the content, post_id (the post that the comment belongs to) and user_id (the author of the comment)
+        Comment.create("content", post_id, user_id)
+        """
         cls.error_msg = []
         cls.has_error = False
 
@@ -45,36 +65,3 @@ class Comment(ndb.Model):
             return cls
         else:
             return cls
-
-    @classmethod
-    def update(cls, post_id, subject, content,
-               featured_img, delete_featured_img):
-        cls.p = cls.by_id(post_id)
-
-        cls.error_msg = []
-        cls.has_error = False
-
-        if not subject:
-            cls.has_error = True
-            cls.error_msg.extend(["You need to have a subject"])
-        else:
-            cls.p.subject = subject
-
-        if not content:
-            cls.has_error = True
-            cls.error_msg.extend(["You need to have content"])
-        else:
-            cls.p.content = content
-
-        if delete_featured_img:
-            cls.p.featured_img = None
-
-        if featured_img:
-            cls.p.featured_img = images.resize(featured_img, width=1000)
-
-        if not cls.has_error:
-            cls.p.put()
-            return cls
-        else:
-            return cls
-        return

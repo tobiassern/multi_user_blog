@@ -10,7 +10,7 @@ def blog_key(name='default'):
 class Post(ndb.Model):
 
     """Parent class for Post
-    usefull subclasses:
+    useful subclasses:
     by_id
     create
     update"""
