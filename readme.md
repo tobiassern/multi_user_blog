@@ -2,7 +2,7 @@
 
 This is a website for the Multi User Blog project for Udacity FSND. It is written in python along with HTML, CSS, jQuery. Uses Google App Engine and Webapp2.
 
-<a href="http://tobias-blog-143621.appspot.com/">Click here to view the website</a>
+<a href="http://tobias-blog-143621.appspot.com/" target="_blank">Click here to view the website</a>
 
 ## Motivation
 
