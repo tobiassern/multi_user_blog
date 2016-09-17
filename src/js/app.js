@@ -48,6 +48,35 @@ jQuery(function($) {
 		 }
 	});
 
+	$('body').on('click', '.like-icon', function() {
+		var post_id = $(this).attr('data-post-id');
+		var like_url = "/blog/" + post_id + "/like";
+		$.ajax({
+        	type: "get",
+        	url: like_url, //Route which will handle the request
+        	dataType: 'json',
+        	success: function(data){
+        		if(data.logged_in == false) {
+        			$('.like-error-msg').remove();
+        			$('.like-icon').before('<p class="like-error-msg"><small>You need to <a href="/login">login</a> or <a href="/register">register</a> in order to like a post</small></p>');
+        		}
+        		else if(data.error.has_error == true) {
+        			$('.like-error-msg').remove();
+        			$('.like-icon').before('<p class="like-error-msg"><small>' + data.error.error_msg + '</small></p>')
+        		}
+        		else if(data.response.action == true) {
+        			console.log(data.response.type)
+        			$(".likes-count").text(data.response.count)
+        			if(data.response.type == "liked") {
+        				$(".like-icon").addClass("liked");
+        			} else {
+        				$(".like-icon").removeClass("liked");
+        			}
+        		}
+          	}
+      	});
+	});
+
 	// Lisetning to changes in the input file upload field for images
 	$('.img-file-upload').bind('change', function() {
 	  // Checkes so the size is not over 1 mb

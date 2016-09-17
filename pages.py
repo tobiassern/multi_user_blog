@@ -5,6 +5,7 @@ import os
 import re
 import webapp2
 import jinja2
+import json
 from google.appengine.ext import ndb
 
 from google.appengine.api import images
@@ -13,6 +14,7 @@ from google.appengine.api import images
 from users import User, users_key, make_secure_val, check_secure_val
 from posts import Post, blog_key
 from comments import Comment, comment_key
+from likes import Likes
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
@@ -376,7 +378,9 @@ class CommentPost(Handler):
         user_id = self.user.key.id()
         comment = Comment.create(content, post_id, user_id)
         if comment.has_error:
-            self.write("error")
+
+            ############ NEEED TROOO FIIIXX ######
+            self.redirect("/blog/" + post_id)
         else:
             self.redirect('/blog/%s#%s' % (str(post_id), "commentform"))
 
@@ -424,6 +428,32 @@ class Image(Handler):
         self.render("404.html")
 
 
+class LikePost(Handler):
+
+    def get(self, post_id):
+        key = ndb.Key('Post', int(post_id), parent=blog_key())
+        post = key.get()
+        error = dict()
+        response = None
+        logged_in = False
+        if post:
+            author_id = post.user_id
+            if self.user:
+                logged_in = True
+                if author_id == self.user.key.id():
+                    error['has_error'] = True
+                    error['error_msg'] = "Can't like your own post"
+                else:
+                    add_like = Likes.add_like(int(post_id), self.user.key.id())
+                    response = add_like.response
+        else:
+            error['has_error'] = True
+            error['error_msg'] = "No post found"
+
+        self.write(
+            json.dumps(({'logged_in': logged_in, 'response': response, 'error': error})))
+
+
 appLoader = webapp2.WSGIApplication([('/', MainPage),
                                      ('/register', RegisterPage),
                                      ('/login', LoginPage),
@@ -435,6 +465,7 @@ appLoader = webapp2.WSGIApplication([('/', MainPage),
                                      ('/blog/([0-9]+)/edit', EditPost),
                                      ('/blog/([0-9]+)/delete', DeletePost),
                                      ('/comment/([0-9]+)', CommentPost),
+                                     ('/blog/([0-9]+)/like', LikePost),
                                      ('/comment/([0-9]+)/([0-9]+)/delete',
                                       DeleteComment),
                                      ('/blog', BlogPage),

@@ -22,6 +22,7 @@ class Post(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     featured_img = ndb.BlobProperty()
     last_modified = ndb.DateTimeProperty(auto_now=True)
+    likes = ndb.IntegerProperty()
 
     @classmethod
     def by_id(cls, uid):
