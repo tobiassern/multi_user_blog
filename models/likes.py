@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-from posts import Post, blog_key
+from models.posts import Post, blog_key
 
 def likes_key(name='default'):
     # Setting up the comment key for the database

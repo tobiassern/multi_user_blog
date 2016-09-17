@@ -22,6 +22,8 @@ class Post(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     featured_img = ndb.BlobProperty()
     last_modified = ndb.DateTimeProperty(auto_now=True)
+    # using likes variable to make less queries to the db when querying a post
+    # instead of both querying the post table and the likes table
     likes = ndb.IntegerProperty()
 
     @classmethod

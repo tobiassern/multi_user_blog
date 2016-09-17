@@ -11,12 +11,12 @@ from google.appengine.ext import ndb
 from google.appengine.api import images
 
 # Importing local .py files
-from users import User, users_key, make_secure_val, check_secure_val
-from posts import Post, blog_key
-from comments import Comment, comment_key
-from likes import Likes
+from models.users import User, users_key, make_secure_val, check_secure_val
+from models.posts import Post, blog_key
+from models.comments import Comment, comment_key
+from models.likes import Likes
 
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+template_dir = os.path.join(os.path.dirname(__file__), '..', 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
@@ -177,6 +177,10 @@ class EditProfilePage(Handler):
             self.redirect("/login")
 
     def post(self):
+        if not self.user:
+            self.redirect("/login")
+            return
+
         have_error = False
         self.username = self.request.get('username')
         self.password = self.request.get('password')
@@ -306,8 +310,9 @@ class CreatePostPage(Handler):
             self.redirect('/login')
 
     def post(self):
+
         if not self.user:
-            self.redirect('/')
+            self.redirect('/login')
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -327,17 +332,22 @@ class CreatePostPage(Handler):
 class EditPost(Handler):
 
     def get(self, post_id):
-        post = Post.by_id(int(post_id))
 
         if not self.user:
-            self.redirect('/blog/' + post_id)
+            self.redirect('/login')
             return
+
+        post = Post.by_id(int(post_id))
         if post.user_id == self.user.key.id():
             self.render("edit-post.html", post=post)
         else:
             self.redirect('/blog/' + post_id)
 
     def post(self, post_id):
+
+        if not self.user:
+            self.redirect('/login')
+            return
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -361,10 +371,12 @@ class EditPost(Handler):
 class DeletePost(Handler):
 
     def get(self, post_id):
-        post = Post.by_id(int(post_id))
+
         if not self.user:  # check if user is logged in
-            self.redirect('/blog/' + post_id)
+            self.redirect('/login')
             return
+
+        post = Post.by_id(int(post_id))
 
         # check if user the same as the author
         if post.user_id == self.user.key.id():
@@ -377,13 +389,13 @@ class DeletePost(Handler):
 class DeleteComment(Handler):
 
     def get(self, comment_id, post_id):
+        if not self.user:  # check if user is logged in
+            self.redirect('/login')
+            return
+
         self.write(comment_id)
         comment = Comment.get_by_id(int(comment_id), parent=comment_key())
         if not comment:
-            self.redirect('/blog/' + post_id + '#comments-list')
-            return
-
-        if not self.user:  # check if user is logged in
             self.redirect('/blog/' + post_id + '#comments-list')
             return
 
@@ -398,6 +410,11 @@ class DeleteComment(Handler):
 class CommentPost(Handler):
 
     def post(self, post_id):
+
+        if not self.user:
+            self.rediret('/login')
+            return
+
         content = self.request.get('comment')
         user_id = self.user.key.id()
         comment = Comment.create(content, post_id, user_id)
