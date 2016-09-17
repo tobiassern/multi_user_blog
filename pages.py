@@ -59,6 +59,7 @@ class Handler(webapp2.RequestHandler):
 class MainPage(Handler):
 
     def get(self):
+        # Running a post query for frontpage sorted by created date
         posts = Post.query()
         posts = posts.order(-Post.created)
         posts = posts.fetch()
@@ -102,7 +103,7 @@ class RegisterPage(Handler):
         self.email = self.request.get('email')
         self.description = self.request.get('description')
         self.profile_img = self.request.get('profile_img')
-        self.error_msg = []
+        self.error_msg = []  # setting up a list of potential error messages
         self.params = dict(username=self.username,
                            email=self.email, description=self.description)
 
@@ -122,6 +123,7 @@ class RegisterPage(Handler):
             have_error = True
 
         if have_error:
+            # add error_msg to params dict if have error
             self.params['error_msg'] = self.error_msg
             self.render('register.html', **self.params)
         else:
@@ -146,12 +148,14 @@ class RegisterPage(Handler):
 
 class ProfilePage(Handler):
 
-    def get(self, user_profile):
+    def get(self, user_profile):  # fetching the username from the uri
+        # get the profile page of the user by name
         current_user_profile = User.by_name(user_profile)
         if not current_user_profile:
             self.response.set_status(404)
             self.render("404.html")
             return
+        # run a query of all the posts this user has made
         posts = Post.query()
         posts = posts.filter(Post.user_id == current_user_profile.key.id())
         posts = posts.order(-Post.created)
@@ -164,6 +168,8 @@ class ProfilePage(Handler):
 class EditProfilePage(Handler):
 
     def get(self):
+        # Can only edit your own profile and you must be logged in so just
+        # checks if user is logged in
         if self.user:
             user = User.by_id(int(self.user.key.id()))
             self.render("edit-profile.html", user=user)
@@ -233,6 +239,8 @@ class LoginPage(Handler):
             self.login(u)
             self.redirect('/blog')
         else:
+            # simplified the error message handling as there is only one error
+            # message possible
             msg = 'Invalid login'
             self.render('login.html', error=msg)
 
@@ -250,21 +258,30 @@ class Logout(Handler):
 class BlogPage(Handler):
 
     def get(self):
+        # if you try to reach /blog then redirect to frontpage.
         self.redirect('/')
 
 
 class PostPage(Handler):
 
-    def get(self, post_id):
+    def get(self, post_id):  # get the post_id from the uri
         key = ndb.Key('Post', int(post_id), parent=blog_key())
         post = key.get()
-
+        # used for comments if there is an error in the comment form
+        # See CommentPost class
+        comment_error = self.request.get('comment_error')
         if not post:
+            # If there is no post then show a 404 as users can delete their own
+            # posts
             self.response.set_status(404)
             self.render("404.html")
             return
+        # Collect the comments that belongs to this post
         comments = Comment.by_post_id(int(post_id))
+        # For smarter rendering in the template I put the comments in a list
+        # with a dict inside
         comment_output = []
+        # loop through each comment and create the dict for each comment
         for comment in comments:
             user_name = User.username_by_id(int(comment.user_id))
             if not user_name:
@@ -277,7 +294,7 @@ class PostPage(Handler):
         author = User.by_id(post.user_id)
         self.render(
             "post.html", post=post, author=author,
-            comment_output=comment_output)
+            comment_output=comment_output, comment_error=comment_error)
 
 
 class CreatePostPage(Handler):
@@ -297,6 +314,7 @@ class CreatePostPage(Handler):
         user_id = self.user.key.id()
         featured_img = self.request.get('featured_img')
 
+        # error handling is done inside the Post.create class found in posts.py
         post = Post.create(subject, content, featured_img, user_id)
         if post.has_error:
             params = dict(
@@ -323,16 +341,20 @@ class EditPost(Handler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
+        # Possible to delete featured image so added one extra var
+        # for edit post
         delete_featured_img = self.request.get('delete_featured_img')
         featured_img = self.request.get('featured_img')
-
+        # error handling is done inside the Post.update class found in posts.py
         post = Post.update(
             int(post_id), subject, content, featured_img, delete_featured_img)
         if post.has_error:
+            # If errors show the form again with the error messages
             params = dict(
                 subject=subject, content=content, error_msg=post.error_msg)
             self.render('edit-post.html', **params)
         else:
+            # Else redirect to the updated post
             self.redirect('/blog/%s' % str(post.p.key.id()))
 
 
@@ -340,10 +362,11 @@ class DeletePost(Handler):
 
     def get(self, post_id):
         post = Post.by_id(int(post_id))
-        if not self.user:
+        if not self.user:  # check if user is logged in
             self.redirect('/blog/' + post_id)
             return
 
+        # check if user the same as the author
         if post.user_id == self.user.key.id():
             post.key.delete()
             self.redirect('/profile/' + self.user.name)
@@ -357,18 +380,19 @@ class DeleteComment(Handler):
         self.write(comment_id)
         comment = Comment.get_by_id(int(comment_id), parent=comment_key())
         if not comment:
-            self.redirect('/blog/' + post_id + '#commentlist')
+            self.redirect('/blog/' + post_id + '#comments-list')
             return
 
-        if not self.user:
-            self.redirect('/blog/' + post_id + '#commentlist')
+        if not self.user:  # check if user is logged in
+            self.redirect('/blog/' + post_id + '#comments-list')
             return
 
+        # check if user is the same as the author
         if comment.user_id == self.user.key.id():
             comment.key.delete()
-            self.redirect('/blog/' + post_id + '#commentlist')
+            self.redirect('/blog/' + post_id + '#comments-list')
         else:
-            self.redirect('/blog/' + post_id + '#commentlist')
+            self.redirect('/blog/' + post_id + '#comments-list')
 
 
 class CommentPost(Handler):
@@ -378,16 +402,45 @@ class CommentPost(Handler):
         user_id = self.user.key.id()
         comment = Comment.create(content, post_id, user_id)
         if comment.has_error:
-
-            ############ NEEED TROOO FIIIXX ######
-            self.redirect("/blog/" + post_id)
+            self.redirect(
+                "/blog/" + post_id + "?comment_error=true#commentform")
+            # redirect to PostPage class where the error messsage is handled
         else:
-            self.redirect('/blog/%s#%s' % (str(post_id), "commentform"))
+            self.redirect('/blog/%s#%s' % (str(post_id), "comments-list"))
+
+
+class LikePost(Handler):
+
+    def get(self, post_id):
+        key = ndb.Key('Post', int(post_id), parent=blog_key())
+        post = key.get()
+        error = dict()
+        response = None
+        logged_in = False
+        if post:
+            author_id = post.user_id
+            if self.user:
+                logged_in = True
+                if author_id == self.user.key.id():
+                    error['has_error'] = True
+                    error['error_msg'] = "Can't like your own post"
+                else:
+                    add_like = Likes.add_like(int(post_id), self.user.key.id())
+                    response = add_like.response
+        else:
+            error['has_error'] = True
+            error['error_msg'] = "No post found"
+
+        self.write(
+            json.dumps(({'logged_in': logged_in,
+                         'response': response, 'error': error})))
 
 
 class MissingPage(Handler):
 
     def get(self):
+        # If a user tries to write a url that doesn't exist fallback is a 404
+        # template
         self.response.set_status(404)
         self.render("404.html")
         return
@@ -396,10 +449,17 @@ class MissingPage(Handler):
 class RouteProfile(Handler):
 
     def get(self):
+        # If a user tries to visit just /profile rediret to frontpage
         self.redirect('/')
 
 
 class Image(Handler):
+
+    """ Class for image handling.
+    There are two types of images; Featured Image (featured_img) for posts
+    and Profile Images (profile_img) for profile.
+    This is used to create a unique url for each image and make it possible to serve images.
+    """
 
     def get(self):
         img_id = self.request.get('id')
@@ -426,32 +486,6 @@ class Image(Handler):
 
         self.response.set_status(404)
         self.render("404.html")
-
-
-class LikePost(Handler):
-
-    def get(self, post_id):
-        key = ndb.Key('Post', int(post_id), parent=blog_key())
-        post = key.get()
-        error = dict()
-        response = None
-        logged_in = False
-        if post:
-            author_id = post.user_id
-            if self.user:
-                logged_in = True
-                if author_id == self.user.key.id():
-                    error['has_error'] = True
-                    error['error_msg'] = "Can't like your own post"
-                else:
-                    add_like = Likes.add_like(int(post_id), self.user.key.id())
-                    response = add_like.response
-        else:
-            error['has_error'] = True
-            error['error_msg'] = "No post found"
-
-        self.write(
-            json.dumps(({'logged_in': logged_in, 'response': response, 'error': error})))
 
 
 appLoader = webapp2.WSGIApplication([('/', MainPage),

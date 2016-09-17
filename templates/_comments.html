@@ -2,6 +2,9 @@
     <h2>Comments</h2>
     {% if user %}
     <form action="/comment/{{post.key.id()}}" id="commentform" method="post">
+    {% if comment_error %}
+        <p class="form-error-message"><small>If you don't have anything more to say, don't bother. You need to write atleas 5 characters.</small></p>
+    {% endif %}
     <textarea name="comment" id="comment" placeholder="Write your comment..." required></textarea>
     <button type="submit">Post Comment</button>
     </form>
